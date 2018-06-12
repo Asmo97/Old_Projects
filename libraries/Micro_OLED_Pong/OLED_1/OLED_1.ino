@@ -1,7 +1,7 @@
 #include <Wire.h>  // I2C
 #include <SFE_MicroOLED.h>  // SFE_MicroOLED library
 
-#define PIN_RESET 255  //
+#define PIN_RESET 2  //
 #define DC_JUMPER 0  // I2C Addres: 0 - 0x3C, 1 - 0x3D
 
 MicroOLED oled(PIN_RESET, DC_JUMPER); //I2C SETUP
