@@ -151,13 +151,14 @@ void setup() {
   oled.clear(ALL);
   oled.display();
 
-  Vector MovingVelocity(20,-20);
+  Vector MovingVelocity(30,-20);
   Vector StaticVelocity(0, 0);
 
-  Vector BallPosition0(4, 4);
+  //Normal cartesian coordinates
+  Vector BallPosition0(5, 24);
   Vector BallPosition1(12, 12);
   Vector BallPosition2(30, 30);
-  Vector BallPosition3(5, 24);
+  Vector BallPosition3(40, 24);
 
   //Moving Ball
   Ball[0].Velocity = MovingVelocity;
@@ -228,11 +229,11 @@ void loop() {
           Vector Tangent = Normal.CreateTangetVector();
 
           //displace colliding balls away from the collision (static collision)
-          Ball[n].Position.x += Overlap * Normal.x;
-          Ball[n].Position.y += Overlap * Normal.y;
-
-          Ball[m].Position.x -= Overlap * Normal.x;
-          Ball[m].Position.y -= Overlap * Normal.y;
+//          Ball[n].Position.x += Overlap * Normal.x;
+//          Ball[n].Position.y += Overlap * Normal.y;
+//
+//          Ball[m].Position.x -= Overlap * Normal.x;
+//          Ball[m].Position.y -= Overlap * Normal.y;
 
           //Step 2 - Skip
 
