@@ -151,14 +151,14 @@ void setup() {
   oled.clear(ALL);
   oled.display();
 
-  Vector MovingVelocity(30,-20);
+  Vector MovingVelocity(30,30);
   Vector StaticVelocity(0, 0);
 
   //Normal cartesian coordinates
-  Vector BallPosition0(5, 24);
+  Vector BallPosition0(5, 20);
   Vector BallPosition1(12, 12);
-  Vector BallPosition2(30, 30);
-  Vector BallPosition3(40, 24);
+  Vector BallPosition2(35, 35);
+  Vector BallPosition3(40, 15);
 
   //Moving Ball
   Ball[0].Velocity = MovingVelocity;
