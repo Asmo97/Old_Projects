@@ -13,7 +13,7 @@ public:
 			(*this)[i] = v.Data[i];
 	}
 
-	Vector(double X, double Y) {
+	Vector(double X, double Y) { //another constructor for easy input
 		Data[0] = X;
 		Data[1] = Y;
 	}
@@ -25,6 +25,10 @@ public:
 	double Length() const;
 	Vector NormalizeVector() const; //Create unit vector
 	Vector operator*(double scaleup) const;
+	Vector operator+(const Vector& vec) const; //add 2 vectors
+	Vector operator-(const Vector& vec) const; //subtract 2 vectors
+	Vector CreateTangetVector() const; //Create a perpendicular vector
+
 };
 
 class Entity {
@@ -44,12 +48,28 @@ public:
 		Acceleration(Acc),
 		Radius(Rad),
 		Mass(M) {}
+
+	//void update() {
+	//	//this member function is responsible for frame rate independance
+	//	this->Position = (this->Position) + ((this->Velocity) * (dt / 1000)); //Note: dt is in milli seconds
+	//	this->Velocity = this->Velocity + (this->Acceleration * (dt / 1000)); //not in use this for this simulation
+	//}
+	//void KeepInBorders() {
+	//	//Prevent the ball from going out of bounds fully elastic collision 
+	//	if (this->Position[1] - this->Radius <= 0 || this->Position[1] + this->Radius >= SCREEN_HEIGHT) {
+	//		this->Velocity[1] = this->Velocity[1] * -1;
+	//	}
+
+	//	if (this->Position[0] - this->Radius <= 0 || this->Position[0] + this->Radius >= SCREEN_WIDTH) {
+	//		this->Velocity[0] = this->Velocity[0] * -1;
+	//	}
+	//}
 };
 
+//------------------------------------------------------------------------------------------------------------
 //Using scope resolution operator to make code neater
-
 double Vector::Length() const {
-	return sqrt((*this)[0] * (this)[0])
+	return sqrt((this->Data[0] * this->Data[0]) + (this->Data[1] * this->Data[1]));
 }
 
 Vector Vector::NormalizeVector() const {
@@ -57,7 +77,7 @@ Vector Vector::NormalizeVector() const {
 
 	for (int i(0); i < 2; i++)
 		NormVec[i] /= Length();
-	
+
 	return NormVec;
 }
 
@@ -70,15 +90,40 @@ Vector Vector::operator*(double scaleup) const {
 	return NewVector;
 }
 
+Vector Vector::operator+(const Vector& vec) const { //Pass the vector by reference to avoid taking a copy!
+	Vector NewVector(*this);
+
+	for (int i(0); i < 2; i++)
+		NewVector[i] += vec[i];
+
+	return NewVector;
+}
+
+Vector Vector::operator-(const Vector& vec) const {
+	Vector NewVector(*this);
+
+	for (int i(0); i < 2; i++)
+		NewVector[i] -= vec[i];
+
+	return NewVector;
+}
+
+Vector Vector::CreateTangetVector() const {
+	Vector tangent(*this);
+	tangent[0] = -1 * this->Data[1];
+	tangent[1] = this->Data[0];
+	return tangent;
+}
 
 int main() {
+	Entity Ball[2];
 
 	Vector P(5, 5);
-	Vector V(1, 1);
+	Vector V(1, 2);
 	Vector A(0, 0);
-	Entity Ball(P, V, A, 5, 20);
+	Ball[0] = Entity(P, V, A, 5, 20);
 
-	Ball.Position = Ball.Position * 4;
-	std::cout << Ball.Position[1]<< std::endl;
+	Ball.Position = Ball[0].Position + Ball[0].Velocity;
+	std::cout << Ball[0].Position[1] << std::endl;
 	std::cin.get();
 }
