@@ -8,6 +8,7 @@ public:
 	//data members
 	double Data[2]; //create an array allocated on the STACK
 public:
+	Vector() {}
 	Vector(const Vector& v) { //Create a copy constructor 
 		for (int i(0); i < 2; i++)
 			(*this)[i] = v.Data[i];
@@ -41,6 +42,7 @@ public:
 	double Mass;
 
 public:
+	Entity() {}
 	//Constructor intialiser list
 	Entity(const Vector& Pos, const Vector& Vel, const Vector& Acc, double Rad, double M) :
 		Position(Pos),
@@ -48,6 +50,7 @@ public:
 		Acceleration(Acc),
 		Radius(Rad),
 		Mass(M) {}
+
 
 	//void update() {
 	//	//this member function is responsible for frame rate independance
@@ -116,13 +119,13 @@ Vector Vector::CreateTangetVector() const {
 }
 
 int main() {
-
+	Entity Ball[2];
 	Vector P(5, 5);
 	Vector V(1, 2);
 	Vector A(0, 0);
-	Entity Ball(P, V, A, 5, 20);
+	Ball[0] = Entity(P, V, A, 5, 20);
 
-	Ball.Position = Ball.Position + Ball.Velocity;
-	std::cout << Ball.Position[1] << std::endl;
+	Ball[0].Position = Ball[0].Position + Ball[0].Velocity;
+	std::cout << Ball[0].Position[1] << std::endl;
 	std::cin.get();
 }
