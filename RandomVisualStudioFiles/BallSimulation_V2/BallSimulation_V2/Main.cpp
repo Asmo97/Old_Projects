@@ -8,6 +8,7 @@ public:
 	//data members
 	double Data[2]; //create an array allocated on the STACK
 public:
+	Vector() {}
 	Vector(const Vector& v) { //Create a copy constructor 
 		for (int i(0); i < 2; i++)
 			(*this)[i] = v.Data[i];
@@ -41,6 +42,7 @@ public:
 	double Mass;
 
 public:
+	Entity() {}
 	//Constructor intialiser list
 	Entity(const Vector& Pos, const Vector& Vel, const Vector& Acc, double Rad, double M) :
 		Position(Pos),
@@ -49,6 +51,10 @@ public:
 		Radius(Rad),
 		Mass(M) {}
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ff9946af022283682c8561dd55b5f7606c45424b
 	//void update() {
 	//	//this member function is responsible for frame rate independance
 	//	this->Position = (this->Position) + ((this->Velocity) * (dt / 1000)); //Note: dt is in milli seconds
@@ -92,6 +98,7 @@ Vector Vector::operator*(double scaleup) const {
 
 Vector Vector::operator+(const Vector& vec) const { //Pass the vector by reference to avoid taking a copy!
 	Vector NewVector(*this);
+<<<<<<< HEAD
 
 	for (int i(0); i < 2; i++)
 		NewVector[i] += vec[i];
@@ -117,13 +124,43 @@ Vector Vector::CreateTangetVector() const {
 
 int main() {
 	Entity Ball[2];
+=======
 
+	for (int i(0); i < 2; i++)
+		NewVector[i] += vec[i];
+>>>>>>> ff9946af022283682c8561dd55b5f7606c45424b
+
+	return NewVector;
+}
+
+Vector Vector::operator-(const Vector& vec) const {
+	Vector NewVector(*this);
+
+	for (int i(0); i < 2; i++)
+		NewVector[i] -= vec[i];
+
+	return NewVector;
+}
+
+Vector Vector::CreateTangetVector() const {
+	Vector tangent(*this);
+	tangent[0] = -1 * this->Data[1];
+	tangent[1] = this->Data[0];
+	return tangent;
+}
+
+int main() {
+	Entity Ball[2];
 	Vector P(5, 5);
 	Vector V(1, 2);
 	Vector A(0, 0);
 	Ball[0] = Entity(P, V, A, 5, 20);
 
+<<<<<<< HEAD
 	Ball.Position = Ball[0].Position + Ball[0].Velocity;
+=======
+	Ball[0].Position = Ball[0].Position + Ball[0].Velocity;
+>>>>>>> ff9946af022283682c8561dd55b5f7606c45424b
 	std::cout << Ball[0].Position[1] << std::endl;
 	std::cin.get();
 }
