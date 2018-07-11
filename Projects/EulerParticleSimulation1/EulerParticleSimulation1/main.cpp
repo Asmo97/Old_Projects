@@ -1,12 +1,13 @@
 #include <iostream>
 #include <array>
+#include <fstream>
 #include <cmath>
 
 class Vector : public std::array<float, 3> {
 	//std::array<float, 2> vec; // <- You've inherited from std::array, so Vector IS an array.
 public:
 	//Defualt constructor - Apparently i need it in order to create an array of objects(or instances) for the entity class?
-	Vector(){}
+	Vector() {}
 	//Another constructor
 	Vector(float X, float Y, float Z) {
 		(*this)[0] = X;
@@ -33,7 +34,7 @@ public:
 
 public:
 	//Defualt constructor - Apparently i need it in order to create an array of objects(or instances)
-	Entity(){}
+	Entity() {}
 	//Constructor intialiser list
 	Entity(const Vector& Pos, const Vector& Vel, const Vector& Frc, float M) :
 		Position(Pos),
@@ -113,12 +114,18 @@ int main() {
 
 	Particle[0] = Entity(Position, Velocity, Force, 20); //Give particel object some attributes via entity constructor
 
+	std::ofstream outData;
+	outData.open("OutputData.csv", std::ios::app);
+	outData << "Particle" << "," << "Mass" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+
 	for (time = 0; time < MAX_TIME; time += dt) {
 		for (int i(0); i < NumOfParticles; i++) {
-			std::cout << "Particle " << i <<  " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity <<  " Force:" << Particle[i].Force << std::endl;
+			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Force:" << Particle[i].Force << std::endl;
 			//Standard Euler
 			Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 			Particle[i].Velocity = Particle[i].Velocity + Particle[i].Force * dt;
+
+			outData << i << "," << Particle[i].Mass << "," << Particle[i].Position[0] << "," << Particle[i].Position[1] << "," << Particle[i].Position[2] << "," << Particle[i].Velocity[0] << "," << Particle[i].Velocity[1] << "," << Particle[i].Velocity[2] << "," << Particle[i].Force[0] << "," << Particle[i].Force[1] << "," << Particle[i].Force[2] << std::endl;
 		}
 	}
 
