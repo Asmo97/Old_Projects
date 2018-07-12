@@ -104,14 +104,21 @@ private:
 	std::ofstream outData;
 public:
 	WriteData() {
-		(*this).open("OutputData.csv", std::ios::app);
+		if (std::remove("ParticleData.csv") != 0) 
+			std::cout << "No existing file called ParticleData.csv, creating a new file" << std::endl;
+		else
+			std::cout << "Removed existing ParticleData.csv" << std::endl;
+
+		(*this).open("ParticleData.csv", std::ios::app);
 		(*this) << "Particle" << "," << "Mass" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
 	}
 
 	void WriteParticlesData(int particle, float mass, const Vector& pos, const Vector& vel, const Vector& force) {
 		(*this) << particle << "," << mass << "," << pos << vel << force << std::endl;
 	}
-	
+	~WriteData() {
+		(*this).close();
+	}
 };
 
 int main() {
