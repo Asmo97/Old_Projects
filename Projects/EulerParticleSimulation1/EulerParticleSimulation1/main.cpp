@@ -125,7 +125,7 @@ int main() {
 
 	Vector Position(0, 0, 0);  //On ground initially
 	Vector Velocity(0, 10, 0); //Particle thrown straight up 
-	Vector Force(0, -2, 0); //gravity force
+	Vector Force(0, -2, 2); //gravity force
 
 	Particle[0] = Entity(Position, Velocity, Force, 20); //Give particel object some attributes via entity constructor
 
