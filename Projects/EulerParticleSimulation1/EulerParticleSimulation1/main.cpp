@@ -96,8 +96,23 @@ Vector Vector::operator-(const Vector& vec) const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const Vector& vec) {
-	return stream << "<" << vec[0] << "," << vec[1] << "," << vec[2] << ">";
+	return stream << vec[0] << "," << vec[1] << "," << vec[2] << ",";
 }
+
+class WriteData : public std::fstream {
+private:
+	std::ofstream outData;
+public:
+	WriteData() {
+		(*this).open("OutputData.csv", std::ios::app);
+		(*this) << "Particle" << "," << "Mass" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+	}
+
+	void WriteParticlesData(int particle, float mass, const Vector& pos, const Vector& vel, const Vector& force) {
+		(*this) << particle << "," << mass << "," << pos << vel << force << std::endl;
+	}
+	
+};
 
 int main() {
 	float time;
@@ -114,9 +129,7 @@ int main() {
 
 	Particle[0] = Entity(Position, Velocity, Force, 20); //Give particel object some attributes via entity constructor
 
-	std::ofstream outData;
-	outData.open("OutputData.csv", std::ios::app);
-	outData << "Particle" << "," << "Mass" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+	WriteData ParticlesData;
 
 	for (time = 0; time < MAX_TIME; time += dt) {
 		for (int i(0); i < NumOfParticles; i++) {
@@ -125,7 +138,7 @@ int main() {
 			Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 			Particle[i].Velocity = Particle[i].Velocity + Particle[i].Force * dt;
 
-			outData << i << "," << Particle[i].Mass << "," << Particle[i].Position[0] << "," << Particle[i].Position[1] << "," << Particle[i].Position[2] << "," << Particle[i].Velocity[0] << "," << Particle[i].Velocity[1] << "," << Particle[i].Velocity[2] << "," << Particle[i].Force[0] << "," << Particle[i].Force[1] << "," << Particle[i].Force[2] << std::endl;
+			ParticlesData.WriteParticlesData(i, Particle[i].Mass, Particle[i].Position, Particle[i].Velocity, Particle[i].Force);
 		}
 	}
 
