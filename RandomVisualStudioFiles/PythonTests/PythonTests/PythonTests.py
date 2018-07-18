@@ -22,6 +22,9 @@ emp1 = Employee('ASad', 'M',50000)
 emp2 = Employee('test', 'a',60000)
 
 
-print(emp1.__dict__)
-emp1.raise_amount = 1.05
-print(emp1.__dict__)
+#print(emp1.__dict__)
+#emp1.raise_amount = 1.05
+#print(emp1.__dict__)
+
+for i in range(0,10):
+    print(i)
