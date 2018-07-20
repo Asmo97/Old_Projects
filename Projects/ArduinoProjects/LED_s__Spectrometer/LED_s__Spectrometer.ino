@@ -19,7 +19,7 @@ LED operator++(LED& led, int) { // int denotes postfix++
   case GREEN: led = UV; break;
   } 
   return led;
-  //  if (led == GREEN) return led = UV;
+  //  if (led == GREEN) return led = UV; // rollover when it gets out of bounds
   //  std::uint8_t x = led;
   //  return led = static_cast<LED> (++x); //<-- not sure what this line is doing completely
 } //REFERNCE http://carsonbaker.org/looping-through-cpp-enums
