@@ -2,6 +2,8 @@
 #include <array>
 #include <fstream>
 #include <cmath>
+#include <string>
+#include <sstream>
 
 class Vector : public std::array<float, 3> {
 	//std::array<float, 2> vec; // <- You've inherited from std::array, so Vector IS an array.
@@ -103,8 +105,12 @@ class WriteData : public std::fstream {
 private:
 	std::ofstream outData;
 public:
-	WriteData() {
-		if (std::remove("ParticleData.csv") != 0) 
+	WriteData(float time) {
+		std::ostringstream fn;
+
+		fn << "ParticleData" << time << ".csv";
+
+		if (std::remove("ParticleData.csv") != 0)
 			std::cout << "No existing file called ParticleData.csv, creating a new file" << std::endl;
 		else
 			std::cout << "Removed existing ParticleData.csv" << std::endl;
@@ -136,9 +142,11 @@ int main() {
 
 	Particle[0] = Entity(Position, Velocity, Force, 20); //Give particel object some attributes via entity constructor
 
-	WriteData ParticlesData;
+
 
 	for (time = 0; time < MAX_TIME; time += dt) {
+		WriteData ParticlesData(time);
+
 		for (int i(0); i < NumOfParticles; i++) {
 			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Force:" << Particle[i].Force << std::endl;
 			//Standard Euler
@@ -147,8 +155,10 @@ int main() {
 
 			ParticlesData.WriteParticlesData(i, Particle[i].Mass, Particle[i].Position, Particle[i].Velocity, Particle[i].Force);
 		}
+
 	}
 
 	std::cin.get();
 	return 0;
 }
+
