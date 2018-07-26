@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 #include <sstream>
+#include <cstdint>
 
 class Vector : public std::array<float, 3> {
 	//std::array<float, 2> vec; // <- You've inherited from std::array, so Vector IS an array.
@@ -93,7 +94,6 @@ Vector Vector::operator-(const Vector& vec) const {
 
 	for (int i(0); i < 3; i++)
 		NewVector[i] -= vec[i];
-
 	return NewVector;
 }
 
@@ -105,18 +105,15 @@ class WriteData : public std::fstream {
 private:
 	std::ofstream outData;
 public:
-	WriteData(float time) {
-		std::ostringstream fn;
-
-		fn << "ParticleData" << time << ".csv";
-
-		if (std::remove("ParticleData.csv") != 0)
-			std::cout << "No existing file called ParticleData.csv, creating a new file" << std::endl;
+	WriteData(std::uint64_t t) {
+		std::string filename = std::string("ParticleData") + std::to_string(t) + std::string(".csv");
+		if (std::remove(filename.c_str()) != 0)
+			std::cout << "No existing file called " + filename + ", creating a new file" << std::endl;
 		else
-			std::cout << "Removed existing ParticleData.csv" << std::endl;
+			std::cout << "Removed existing " + filename << std::endl;
 
-		(*this).open("ParticleData.csv", std::ios::app);
-		(*this) << "Particle" << "," << "Mass" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+		(*this).open(filename, std::ios::app);
+		(*this) << "#" << "," << "M" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
 	}
 
 	void WriteParticlesData(int particle, float mass, const Vector& pos, const Vector& vel, const Vector& force) {
@@ -128,17 +125,17 @@ public:
 };
 
 int main() {
-	float time;
-	float MAX_TIME = 10.00f;
-	float dt = 1.00f;
+	std::uint64_t time;
+	std::uint64_t MAX_TIME = 10;
+	std::uint64_t dt = 1;
 
 	//Create an array of Particle Obj on the Stack!
 	const unsigned int NumOfParticles = 1;
 	Entity Particle[NumOfParticles];
 
 	Vector Position(0, 0, 0);  //On ground initially
-	Vector Velocity(0, 10, 0); //Particle thrown straight up 
-	Vector Force(0, -2, 0); //gravity force
+	Vector Velocity(0, 2, 0); //Particle thrown straight up 
+	Vector Force(0, -0.4, 0); //gravity force
 
 	Particle[0] = Entity(Position, Velocity, Force, 20); //Give particel object some attributes via entity constructor
 
@@ -161,4 +158,3 @@ int main() {
 	std::cin.get();
 	return 0;
 }
-

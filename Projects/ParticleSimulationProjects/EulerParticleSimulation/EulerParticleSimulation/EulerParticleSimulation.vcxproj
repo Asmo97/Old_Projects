@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{E0A9A49A-C26E-4FBE-86FF-482FA318313B}</ProjectGuid>
-    <RootNamespace>EulerParticleSimulation1</RootNamespace>
+    <ProjectGuid>{723DA4BD-2378-436A-A862-F6F2F7E79A04}</ProjectGuid>
+    <RootNamespace>EulerParticleSimulation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
