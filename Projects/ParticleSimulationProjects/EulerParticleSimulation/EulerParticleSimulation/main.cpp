@@ -111,8 +111,20 @@ std::ostream& operator<<(std::ostream& stream, const Vector& vec) {
 
 class WriteData : public std::fstream {
 private:
-	std::ofstream outData;
+	std::ofstream outPythonData;
+	std::ofstream outParaviewData;
 public:
+	WriteData() {
+		std::string filename = std::string("ParticlePythonData.csv");
+		if (std::remove(filename.c_str()) != 0)
+			std::cout << "No existing file called " + filename + ", creating a new file" << std::endl;
+		else
+			std::cout << "Removed existing " + filename << std::endl;
+
+		this->outPythonData.open(filename, std::ios::app);
+		this->outPythonData << "Px" << "," << "Py" << "," << "Pz" << std::endl;
+	}
+
 	WriteData(std::uint64_t t) {
 		std::string filename = std::string("ParticleData") + std::to_string(t) + std::string(".csv");
 		if (std::remove(filename.c_str()) != 0)
@@ -120,17 +132,24 @@ public:
 		else
 			std::cout << "Removed existing " + filename << std::endl;
 
-		(*this).open(filename, std::ios::app);
-		(*this) << "#" << "," << "R" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+		this->outParaviewData.open(filename, std::ios::app);
+		this->outParaviewData << "#" << "," << "R" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
 	}
 
 	void WriteParticlesData(int particle, float rad, const Vector& pos, const Vector& vel, const Vector& force) {
-		(*this) << particle << "," << rad << "," << pos << vel << force << std::endl;
+		this->outParaviewData << particle << "," << rad << "," << pos << vel << force << std::endl;
 	}
+
+	void WritePythonParticlesData(const Vector& pos) {
+		this->outPythonData << pos[0] << "," << pos[1] << "," << pos[2] << std::endl;
+	}
+
 	~WriteData() {
-		(*this).close();
+		this->outParaviewData.close();
+		this->outPythonData.close();
 	}
 };
+
 
 int main() {
 	float time;
@@ -154,31 +173,32 @@ int main() {
 	Particle[0] = Entity(SunPosition, SunVelocity, SunAcceleration, 10.00f, 10.00f); //the sun
 	Particle[1] = Entity(PlanetPosition, PlanetVelocity, PlanetAcceleration, 1.00f, 1.00f); //the planet (satalite)
 
+	WriteData PythonParticleData;
 
 	for (time = 0.00f; time < MAX_TIME; time += dt) {
 
 		WriteData ParticlesData(file_counter);
 
 		for (int i(0); i < NumOfParticles; i++) {
-			//write data to file
+			//write data to files
 			ParticlesData.WriteParticlesData(i, Particle[i].Radius, Particle[i].Position, Particle[i].Velocity, Particle[i].Acceleration);
 			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Force:" << Particle[i].Acceleration << std::endl;
 			
 			if (i != 0) { //we dont want to update the suns attributes 
+				PythonParticleData.WritePythonParticlesData(Particle[i].Position);
 
 				//explicit Euler
-				Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-				Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				//Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				//Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
 
 				//semi-implitcit Euler
-				//Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-				//Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 
 				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
 				float G = 1;
 				Vector r = Particle[0].Position - Particle[i].Position;
 				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (abs(r * r)));
-
 
 			}
 			else {
