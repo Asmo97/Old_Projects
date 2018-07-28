@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES // for C++
+
 #include <iostream>
 #include <array>
 #include <fstream>
@@ -32,18 +34,24 @@ public:
 	//Data Members
 	Vector Position;
 	Vector Velocity;
-	Vector Force;
+	Vector Acceleration;
+	float Radius;
+	float Density;
+	float Volume = (4/3) * (float)M_PI * powf(Radius,3.00f); //Casting for pi
+	//float Mass = Density * Volume;
 	float Mass;
 
 public:
 	//Defualt constructor - Apparently i need it in order to create an array of objects(or instances)
 	Entity() {}
 	//Constructor intialiser list
-	Entity(const Vector& Pos, const Vector& Vel, const Vector& Frc, float M) :
+	Entity(const Vector& Pos, const Vector& Vel, const Vector& Acc, float rad, float m) :
 		Position(Pos),
 		Velocity(Vel),
-		Force(Frc),
-		Mass(M)
+		Acceleration(Acc),
+		Radius(rad),
+		Mass(m)
+		//Density(den)
 	{}
 };
 
@@ -113,11 +121,11 @@ public:
 			std::cout << "Removed existing " + filename << std::endl;
 
 		(*this).open(filename, std::ios::app);
-		(*this) << "#" << "," << "M" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+		(*this) << "#" << "," << "R" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
 	}
 
-	void WriteParticlesData(int particle, float mass, const Vector& pos, const Vector& vel, const Vector& force) {
-		(*this) << particle << "," << mass << "," << pos << vel << force << std::endl;
+	void WriteParticlesData(int particle, float rad, const Vector& pos, const Vector& vel, const Vector& force) {
+		(*this) << particle << "," << rad << "," << pos << vel << force << std::endl;
 	}
 	~WriteData() {
 		(*this).close();
@@ -125,33 +133,61 @@ public:
 };
 
 int main() {
-	std::uint64_t time;
-	std::uint64_t MAX_TIME = 10;
-	std::uint64_t dt = 1;
+	float time;
+	float MAX_TIME = 10.00f;
+	float dt = 1.00f/60.00f;
+	std::uint64_t file_counter = 0;
 
-	//Create an array of Particle Obj on the Stack!
-	const unsigned int NumOfParticles = 1;
+	//Create an array of Particle Obj on the Stack
+	const unsigned int NumOfParticles = 2; //<---- WATCH OUT FOR THIS WHEN CREATING ANOTHER PARTICLE
 	Entity Particle[NumOfParticles];
 
-	Vector Position(0, 0, 0);  //On ground initially
-	Vector Velocity(0, 2, 0); //Particle thrown straight up 
-	Vector Force(0, -0.4, 0); //gravity force
+	Vector SunPosition(0, 0, 0); 
+	Vector SunVelocity(0, 0, 0); 
+	Vector SunAcceleration(0, 0, 0); 
 
-	Particle[0] = Entity(Position, Velocity, Force, 20); //Give particel object some attributes via entity constructor
+	Vector PlanetPosition(2, 0, 0);
+	Vector PlanetVelocity(0, 1, 0);
+	Vector PlanetAcceleration(0, 0, 0);
+
+	//Give particel object some attributes via entity constructor
+	Particle[0] = Entity(SunPosition, SunVelocity, SunAcceleration, 10.00f, 10.00f); //the sun
+	Particle[1] = Entity(PlanetPosition, PlanetVelocity, PlanetAcceleration, 1.00f, 1.00f); //the planet (satalite)
 
 
+	for (time = 0.00f; time < MAX_TIME; time += dt) {
 
-	for (time = 0; time < MAX_TIME; time += dt) {
-		WriteData ParticlesData(time);
+		WriteData ParticlesData(file_counter);
 
 		for (int i(0); i < NumOfParticles; i++) {
-			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Force:" << Particle[i].Force << std::endl;
-			//Standard Euler
-			Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-			Particle[i].Velocity = Particle[i].Velocity + Particle[i].Force * dt;
+			//write data to file
+			ParticlesData.WriteParticlesData(i, Particle[i].Radius, Particle[i].Position, Particle[i].Velocity, Particle[i].Acceleration);
+			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Force:" << Particle[i].Acceleration << std::endl;
+			
+			if (i != 0) { //we dont want to update the suns attributes 
 
-			ParticlesData.WriteParticlesData(i, Particle[i].Mass, Particle[i].Position, Particle[i].Velocity, Particle[i].Force);
+				//explicit Euler
+				Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+
+				//semi-implitcit Euler
+				//Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				//Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+
+				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
+				float G = 1;
+				Vector r = Particle[0].Position - Particle[i].Position;
+				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (abs(r * r)));
+
+
+			}
+			else {
+				continue;
+			}
+
 		}
+
+		file_counter++;
 
 	}
 

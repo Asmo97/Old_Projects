@@ -1,8 +1,10 @@
 #include <iostream>
 
-void Print(const char* message); //Create a decleration (NO BODY!)
+
 
 int main() {
-	Print("Hello World");
+	float a = 9.877;
+		int b = (int)(a);
+		std::cout << b << std::endl;
 	std::cin.get();
 }
