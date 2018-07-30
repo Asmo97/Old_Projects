@@ -198,22 +198,19 @@ int main() {
 				Vector r = Particle[0].Position - Particle[i].Position;
 				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (r.Length() * r.Length()));
 
-				if (time < 10) {
+				if (time < 10 && time > 10) {
 					//explicit Euler
 					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 					Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
 				}
 				if (time == 10) {
+
 					//explicit Euler reverse
 					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 					Particle[i].Velocity = (Particle[i].Velocity + Particle[i].Acceleration * dt) * - 1;
 				}
-				if (time > 10) {
-					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-					Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-				}
 
-				//if (time < 10) {
+				//if (time < 10 && time > 10 ) {
 				//	//semi-implicit Euler
 				//	Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
 				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
@@ -225,11 +222,6 @@ int main() {
 				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 				//}
 
-				//if (time > 10) {
-				//	//semi-implicit Euler
-				//	Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-				//}
 
 				//Energy of an Orbiting Satellite - http://www.sparknotes.com/testprep/books/sat2/physics/chapter11section3.rhtml
 				//Particle[i].TotalOrbitalEnergy = (G * Particle[0].Mass * Particle[1].Mass) / (2 * r.Length());

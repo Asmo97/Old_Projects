@@ -13,8 +13,8 @@ ax1.plot(x,y,z, label = "Explicit") #Explicit
 ax1.plot(x1,y1,z1, label = "Implicit" ) #Implicit
 ax1.scatter(0,0,0, c='orange', s = 100)
 
-ax2.plot(e,label = "Explicit")
-ax2.plot(e1,label = "Implicit")
+ax2.plot(t,e,label = "Explicit")
+ax2.plot(t1,e1,label = "Implicit")
 
 ax1.set_xlim3d([-2.0, 2.0])
 ax1.set_xlabel('X')
