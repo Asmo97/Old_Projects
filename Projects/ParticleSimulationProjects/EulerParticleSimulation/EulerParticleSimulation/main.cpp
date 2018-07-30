@@ -40,6 +40,10 @@ public:
 	float Volume = (4/3) * (float)M_PI * powf(Radius,3.00f); //Casting for pi
 	//float Mass = Density * Volume;
 	float Mass;
+	float KeneticE = 0;
+	float PotentialE = 0;
+	float TotalE = 0;
+	//float TotalOrbitalEnergy; // E = K.E + U 
 
 public:
 	//Defualt constructor - Apparently i need it in order to create an array of objects(or instances)
@@ -114,8 +118,9 @@ private:
 	std::ofstream outPythonData;
 	std::ofstream outParaviewData;
 public:
+	//Python data
 	WriteData() {
-		std::string filename = std::string("ParticlePythonData.csv");
+		std::string filename = std::string("PythonParticleDataExplicit.csv");
 		if (std::remove(filename.c_str()) != 0)
 			std::cout << "No existing file called " + filename + ", creating a new file" << std::endl;
 		else
@@ -125,23 +130,24 @@ public:
 		this->outPythonData << "Px" << "," << "Py" << "," << "Pz" << std::endl;
 	}
 
+	//Paraview Data
 	WriteData(std::uint64_t t) {
-		std::string filename = std::string("ParticleData") + std::to_string(t) + std::string(".csv");
+		std::string filename = std::string("ParaviewParticleData") + std::to_string(t) + std::string(".csv");
 		if (std::remove(filename.c_str()) != 0)
 			std::cout << "No existing file called " + filename + ", creating a new file" << std::endl;
 		else
 			std::cout << "Removed existing " + filename << std::endl;
 
 		this->outParaviewData.open(filename, std::ios::app);
-		this->outParaviewData << "#" << "," << "R" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Fx" << "," << "Fy" << "," << "Fz" << std::endl;
+		this->outParaviewData << "#" << "," << "R" << "," << "Px" << "," << "Py" << "," << "Pz" << "," << "Vx" << "," << "Vy" << "," << "Vz" << "," << "Ax" << "," << "Ay" << "," << "Az" << std::endl;
 	}
 
-	void WriteParticlesData(int particle, float rad, const Vector& pos, const Vector& vel, const Vector& force) {
-		this->outParaviewData << particle << "," << rad << "," << pos << vel << force << std::endl;
+	void WriteParticlesData(int particle, float rad, const Vector& pos, const Vector& vel, const Vector& acc) {
+		this->outParaviewData << particle << "," << rad << "," << pos << vel << acc << std::endl;
 	}
 
-	void WritePythonParticlesData(const Vector& pos) {
-		this->outPythonData << pos[0] << "," << pos[1] << "," << pos[2] << std::endl;
+	void WritePythonParticlesData(const Vector& pos, float totalE, float t) {
+		this->outPythonData << pos << totalE << "," << t << std::endl;
 	}
 
 	~WriteData() {
@@ -153,8 +159,8 @@ public:
 
 int main() {
 	float time;
-	float MAX_TIME = 10.00f;
-	float dt = 1.00f/60.00f;
+	float MAX_TIME = 20;
+	float dt = 1.00f/100.00f;
 	std::uint64_t file_counter = 0;
 
 	//Create an array of Particle Obj on the Stack
@@ -166,7 +172,7 @@ int main() {
 	Vector SunAcceleration(0, 0, 0); 
 
 	Vector PlanetPosition(2, 0, 0);
-	Vector PlanetVelocity(0, 1, 0);
+	Vector PlanetVelocity(0, 2, 0);
 	Vector PlanetAcceleration(0, 0, 0);
 
 	//Give particel object some attributes via entity constructor
@@ -177,29 +183,65 @@ int main() {
 
 	for (time = 0.00f; time < MAX_TIME; time += dt) {
 
-		WriteData ParticlesData(file_counter);
+		//WriteData ParaviewParticlesData(file_counter);
 
 		for (int i(0); i < NumOfParticles; i++) {
 			//write data to files
-			ParticlesData.WriteParticlesData(i, Particle[i].Radius, Particle[i].Position, Particle[i].Velocity, Particle[i].Acceleration);
-			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Force:" << Particle[i].Acceleration << std::endl;
+			//ParaviewParticlesData.WriteParticlesData(i, Particle[i].Radius, Particle[i].Position, Particle[i].Velocity, Particle[i].Acceleration);
+			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Acceleration:" << Particle[i].Acceleration << std::endl;
 			
 			if (i != 0) { //we dont want to update the suns attributes 
-				PythonParticleData.WritePythonParticlesData(Particle[i].Position);
-
-				//explicit Euler
-				//Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-				//Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-
-				//semi-implitcit Euler
-				Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-				Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				
 
 				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
 				float G = 1;
 				Vector r = Particle[0].Position - Particle[i].Position;
-				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (abs(r * r)));
+				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (r.Length() * r.Length()));
 
+				if (time < 10) {
+					//explicit Euler
+					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+					Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				}
+				if (time == 10) {
+					//explicit Euler reverse
+					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+					Particle[i].Velocity = (Particle[i].Velocity + Particle[i].Acceleration * dt) * - 1;
+				}
+				if (time > 10) {
+					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+					Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				}
+
+				//if (time < 10) {
+				//	//semi-implicit Euler
+				//	Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				//}
+
+				//if(time == 10) {
+				//	//semi-implicit Euler
+				//	Particle[i].Velocity = (Particle[i].Velocity + Particle[i].Acceleration * dt) * -1;
+				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				//}
+
+				//if (time > 10) {
+				//	//semi-implicit Euler
+				//	Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				//}
+
+				//Energy of an Orbiting Satellite - http://www.sparknotes.com/testprep/books/sat2/physics/chapter11section3.rhtml
+				//Particle[i].TotalOrbitalEnergy = (G * Particle[0].Mass * Particle[1].Mass) / (2 * r.Length());
+				
+				//testing the total orbital energy
+				Particle[i].KeneticE = 0.5 * Particle[i].Mass * pow(Particle[i].Velocity.Length(),2);
+				Particle[i].PotentialE = (-1 * G * Particle[0].Mass * Particle[i].Mass) / r.Length();
+				Particle[i].TotalE = Particle[i].KeneticE + Particle[i].PotentialE;
+
+				PythonParticleData.WritePythonParticlesData(Particle[i].Position, Particle[i].TotalE, time);
+
+				std::cout << Particle[i].TotalE << std::endl;
 			}
 			else {
 				continue;
