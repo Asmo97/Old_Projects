@@ -37,7 +37,7 @@ public:
 	Vector Acceleration;
 	float Radius;
 	float Density;
-	float Volume = (4/3) * (float)M_PI * powf(Radius,3.00f); //Casting for pi
+	float Volume = (4 / 3) * (float)M_PI * powf(Radius, 3.00f); //Casting for pi
 	//float Mass = Density * Volume;
 	float Mass;
 	float KeneticE = 0;
@@ -160,16 +160,16 @@ public:
 int main() {
 	float time;
 	float MAX_TIME = 20;
-	float dt = 1.00f/100.00f;
+	float dt = 1.00f / 100.00f;
 	std::uint64_t file_counter = 0;
 
 	//Create an array of Particle Obj on the Stack
 	const unsigned int NumOfParticles = 2; //<---- WATCH OUT FOR THIS WHEN CREATING ANOTHER PARTICLE
 	Entity Particle[NumOfParticles];
 
-	Vector SunPosition(0, 0, 0); 
-	Vector SunVelocity(0, 0, 0); 
-	Vector SunAcceleration(0, 0, 0); 
+	Vector SunPosition(0, 0, 0);
+	Vector SunVelocity(0, 0, 0);
+	Vector SunAcceleration(0, 0, 0);
 
 	Vector PlanetPosition(2, 0, 0);
 	Vector PlanetVelocity(0, 2, 0);
@@ -189,45 +189,27 @@ int main() {
 			//write data to files
 			//ParaviewParticlesData.WriteParticlesData(i, Particle[i].Radius, Particle[i].Position, Particle[i].Velocity, Particle[i].Acceleration);
 			std::cout << "Particle " << i << " Position:" << Particle[i].Position << " Veclocity:" << Particle[i].Velocity << " Acceleration:" << Particle[i].Acceleration << std::endl;
-			
+
 			if (i != 0) { //we dont want to update the suns attributes 
-				
 
 				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
 				float G = 1;
 				Vector r = Particle[0].Position - Particle[i].Position;
 				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (r.Length() * r.Length()));
 
-				if (time < 10 && time > 10) {
-					//explicit Euler
-					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-					Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-				}
-				if (time == 10) {
+				//explicit Euler
+				Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
+				Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
 
-					//explicit Euler reverse
-					Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-					Particle[i].Velocity = (Particle[i].Velocity + Particle[i].Acceleration * dt) * - 1;
-				}
-
-				//if (time < 10 && time > 10 ) {
-				//	//semi-implicit Euler
-				//	Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
-				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-				//}
-
-				//if(time == 10) {
-				//	//semi-implicit Euler
-				//	Particle[i].Velocity = (Particle[i].Velocity + Particle[i].Acceleration * dt) * -1;
-				//	Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
-				//}
-
+				//semi-implicit Euler
+				//Particle[i].Velocity = Particle[i].Velocity + Particle[i].Acceleration * dt;
+				//Particle[i].Position = Particle[i].Position + Particle[i].Velocity * dt;
 
 				//Energy of an Orbiting Satellite - http://www.sparknotes.com/testprep/books/sat2/physics/chapter11section3.rhtml
 				//Particle[i].TotalOrbitalEnergy = (G * Particle[0].Mass * Particle[1].Mass) / (2 * r.Length());
-				
+
 				//testing the total orbital energy
-				Particle[i].KeneticE = 0.5 * Particle[i].Mass * pow(Particle[i].Velocity.Length(),2);
+				Particle[i].KeneticE = 0.5 * Particle[i].Mass * pow(Particle[i].Velocity.Length(), 2);
 				Particle[i].PotentialE = (-1 * G * Particle[0].Mass * Particle[i].Mass) / r.Length();
 				Particle[i].TotalE = Particle[i].KeneticE + Particle[i].PotentialE;
 
