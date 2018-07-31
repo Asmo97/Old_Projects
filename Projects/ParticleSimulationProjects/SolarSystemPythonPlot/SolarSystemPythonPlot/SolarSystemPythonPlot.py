@@ -7,5 +7,10 @@ fig = plt.figure()
 ax1 = fig.add_subplot(2,1,1, projection = '3d')
 ax2 = fig.add_subplot(2,1,2)
 
-for i in range(1,10):
-    print(i)
+x = []
+y = []
+z = []
+
+for i in range(0,9):
+  x.append([i])
+print(x[1])
