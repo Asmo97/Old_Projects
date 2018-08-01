@@ -24,7 +24,7 @@ ax1.set_zlim3d([-2.0, 2.0])
 ax1.set_zlabel('Z')
 ax1.set_title('Euler Test')
 
-ax2.plot
+
 ax2.set_xlabel('Time')
 ax2.set_ylabel('Energy')
 ax2.set_title('Total Energy of planets')

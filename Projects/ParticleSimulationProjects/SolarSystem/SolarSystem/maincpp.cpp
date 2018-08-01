@@ -8,23 +8,23 @@
 #include <sstream>
 #include <cstdint>
 
-class Vector : public std::array<float, 3> {
+class Vector : public std::array<double, 3> {
 	//std::array<float, 2> vec; // <- You've inherited from std::array, so Vector IS an array.
 public:
 	//Defualt constructor - Apparently i need it in order to create an array of objects(or instances) for the entity class?
 	Vector() {}
 	//Another constructor
-	Vector(float X, float Y, float Z) {
+	Vector(double X, double Y, double Z) {
 		(*this)[0] = X;
 		(*this)[1] = Y;
 		(*this)[2] = Z;
 	}
 public:
 	//member functions, will use the scope operator :: to make the class easy to read
-	float Length() const; //Finds the length of a vector
+	double Length() const; //Finds the length of a vector
 	Vector NormalizeVector() const; //Create unit vector
-	Vector operator*(float scale) const; //scale the vector
-	float operator*(const Vector& vec) const; //Dot Product of two vectors
+	Vector operator*(double scale) const; //scale the vector
+	double operator*(const Vector& vec) const; //Dot Product of two vectors
 	Vector operator+(const Vector& vec) const; //add 2 vectors
 	Vector operator-(const Vector& vec) const; //subtract 2 vectors
 };
@@ -36,20 +36,20 @@ public:
 	Vector Position;
 	Vector Velocity;
 	Vector Acceleration;
-	float Radius;
-	float Density;
-	float Volume = (4 / 3) * (float)M_PI * powf(Radius, 3.00f); //Casting for pi
+	double Radius;
+	double Density;
+	double Volume = (4 / 3) * (double)M_PI * powf(Radius, 3.00f); //Casting for pi
 	//float Mass = Density * Volume;
-	float Mass;
-	float KeneticE = 0;
-	float PotentialE = 0;
-	float TotalE = 0;
+	double Mass;
+	double KeneticE = 0;
+	double PotentialE = 0;
+	double TotalE = 0;
 
 public:
 	//Defualt constructor - Apparently i need it in order to create an array of objects(or instances)
 	Entity() {}
 	//Constructor intialiser list
-	Entity(const Vector& Pos, const Vector& Vel, const Vector& Acc, float rad, float m) :
+	Entity(const Vector& Pos, const Vector& Vel, const Vector& Acc, double rad, double m) :
 		Position(Pos),
 		Velocity(Vel),
 		Acceleration(Acc),
@@ -58,7 +58,7 @@ public:
 		//Density(den)
 	{}
 
-	void CreatePlanet(const char* planet, float Px, float Py, float Pz, float Vx, float Vy, float Vz, float r, float m) {
+	void CreatePlanet(const char* planet, double Px, double Py, double Pz, double Vx, double Vy, double Vz, double r, double m) {
 		Vector Pos(Px, Py, Pz);
 		Vector Vel(Vx, Vy, Vz);
 		Vector Acc(0, 0, 0);
@@ -72,12 +72,12 @@ public:
 	}
 };
 
-float Vector::Length() const {
+double Vector::Length() const {
 	//There's two ways of accessing the base class. One way is to
 	//dereference the this pointer, i.e. *this. the other is to call
 	//them explicitly, like this std::array::operator[](0). I think
 	//*this is neater
-	float length = std::sqrt((*this)[0] * (*this)[0] + (*this)[1] * (*this)[1] + (*this)[2] * (*this)[2]);
+	double length = std::sqrt((*this)[0] * (*this)[0] + (*this)[1] * (*this)[1] + (*this)[2] * (*this)[2]);
 	return length;
 }
 
@@ -90,7 +90,7 @@ Vector Vector::NormalizeVector() const {
 	return NormVec;
 }
 
-Vector Vector::operator*(float scale) const {
+Vector Vector::operator*(double scale) const {
 	Vector NewVector(*this);
 
 	for (int i(0); i < 3; i++)
@@ -99,7 +99,7 @@ Vector Vector::operator*(float scale) const {
 	return NewVector;
 }
 
-float Vector::operator*(const Vector& vec) const { //Pass the vector by reference to avoid taking a copy!
+double Vector::operator*(const Vector& vec) const { //Pass the vector by reference to avoid taking a copy!
 
 	return ((*this)[0] * vec[0] + (*this)[1] * vec[1] + (*this)[2] * vec[2]);
 
@@ -143,7 +143,7 @@ public:
 		(*this) << "#" << "," << "R" << "," << "Px" << "," << "Py" << "," << "Pz" << std::endl;
 	}
 
-	void WriteParticlesData(int particle, float rad, const Vector& pos, const Vector& vel, const Vector& acc) {
+	void WriteParticlesData(int particle, double rad, const Vector& pos, const Vector& vel, const Vector& acc) {
 		(*this) << particle << "," << rad << "," << pos << std::endl;
 	}
 
@@ -171,7 +171,7 @@ public:
 		}
 	}
 
-	void WriteParticleData(int Particle, const Vector& pos, float totalE, float t) {
+	void WriteParticleData(int Particle, const Vector& pos, double totalE, double t) {
 		std::string filename = std::string("PythonParticleData") + std::to_string(Particle) + std::string(".csv");
 		(*this).open(filename, std::ios::app);
 		(*this) << pos << totalE << "," << t << std::endl;
@@ -185,28 +185,27 @@ public:
 
 
 int main() {
-	float time;
-	float MAX_TIME = 1;
-	float dt = 1.00f / 100.00f;
+	double time;
+	double MAX_TIME = 1;
+	double dt = 1.00f / 100.00f;
 	std::uint64_t file_counter = 0;
-	size_t sun_mass = 1.98847e+30;
 
 	//Create an array of Particle Obj on the Stack
 	const unsigned int NumOfParticles = 10; //<---- WATCH OUT FOR THIS WHEN CREATING ANOTHER PARTICLE
 	Entity Particle[NumOfParticles];
 
 	//Give particel object some attributes via member function
-	//Astonomical Units for distances and velocity, and Solor mass http://planetstar.wikia.com/wiki/Astronomical_unit_per_year
-	Particle[0].CreatePlanet("Sun", 0, 0, 0, 0, 0, 0, 1.00f, 1.00f);
-	Particle[1].CreatePlanet("Mercury", 0.387f, 0, 0, 0, 10.020f, 0, 3.3011e+23/sun_mass, 1.00f); //the planet (satalite)
-	Particle[2].CreatePlanet("Venus", 0.723f, 0, 0, 0, 7.388f, 0, 4.8675e+24 / sun_mass, 1.00f);
-	Particle[3].CreatePlanet("Earth", 1.00f, 0, 0, 0, 6.283f, 0, 5.97237e+24 / sun_mass, 1.00f);
-	Particle[4].CreatePlanet("Mars", 1.524f, 0, 0, 0, 5.082f, 0, 6.4171e+23 / sun_mass, 1.00f);
-	Particle[5].CreatePlanet("Jupiter", 5.200f, 0, 0, 0, 2.754f, 0, 1.8982e+27 / sun_mass, 1.00f);
-	Particle[6].CreatePlanet("Saturn", 9.538f, 0, 0, 0, 2.033f, 0, 5.6834e+26 / sun_mass, 1.00f);
-	Particle[7].CreatePlanet("Uranus", 19.229f, 0, 0, 0, 1.432f, 0, 8.6810e+25 / sun_mass, 1.00f);
-	Particle[8].CreatePlanet("Neptune", 30.058f, 0, 0, 0, 1.146f, 0, 1.0243e+26 / sun_mass, 1.00f);
-	Particle[9].CreatePlanet("Pluto", 39.264f, 0, 0, 0, 0.996f, 0, 1.303e+22 / sun_mass, 1.00f);
+	//SI units (radius is 1.00 for all planets)
+	Particle[0].CreatePlanet("Sun", 0, 0, 0, 0, 0, 0, 1.00f, 1.989e+30);
+	Particle[1].CreatePlanet("Mercury", 57909175e+3, 0, 0, 0, 47.362e+3, 0, 1.00f, 3.3011e+23); //the planet (satalite)
+	Particle[2].CreatePlanet("Venus", 108208930e+3, 0, 0, 0, 35.02e+3, 0, 1.00f, 4.8675e+24);
+	Particle[3].CreatePlanet("Earth", 149597890e+3, 0, 0, 0, 29.78e+3, 0, 1.00f, 5.97237e+24);
+	Particle[4].CreatePlanet("Mars", 227936640e+3, 0, 0, 0, 24.007e+3, 0, 1.00f, 6.4171e+23);
+	Particle[5].CreatePlanet("Jupiter", 778412020e+3, 0, 0, 0, 13.07e+3f, 0, 1.00f, 1.8982e+27);
+	Particle[6].CreatePlanet("Saturn", 1426725400e+3, 0, 0, 0, 9.68e+3, 0, 1.00f, 5.6834e+26);
+	Particle[7].CreatePlanet("Uranus", 2870972200e+3, 0, 0, 0, 6.80e+3, 0, 1.00f, 8.6810e+25);
+	Particle[8].CreatePlanet("Neptune", 4498252900e+3, 0, 0, 0, 5.43e+3, 0, 1.00f, 1.0243e+26);
+	Particle[9].CreatePlanet("Pluto", 5906380000e+3, 0, 0, 0, 4.67e+3, 0, 1.00f, 1.303e+22);
 
 	WritePythonData PythonParticleData(NumOfParticles);
 
@@ -222,7 +221,7 @@ int main() {
 			if (i != 0) { //we dont want to update the suns attributes 
 
 				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
-				float G = 4 * pow((float)M_PI,2); //see wiki page for units
+				double G = 6.67408e-11; //m^3 kg-1 s^-2
 				Vector r = Particle[0].Position - Particle[i].Position; //radius between planet and sun
 				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (r.Length() * r.Length())); //Centrefugal force 
 
