@@ -8,7 +8,7 @@ ax1 = fig.add_subplot(111, projection = '3d')
 
 Planetnames = ["Mercury" , "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"]
 
-for i in range(1,9):
+for i in range(1,10):
     Px,Py,Pz,e,t = np.loadtxt('C:\\Users\\Saad\\Desktop\\Fun_stuff\\Projects\\ParticleSimulationProjects\\SolarSystem\\SolarSystem\\PythonParticleData' + str(i) +'.csv', dtype="double", unpack=True, delimiter=',', skiprows = 1)
     ax1.plot(Px,Py,Pz, label = Planetnames[i-1])
 

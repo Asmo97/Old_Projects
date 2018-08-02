@@ -195,17 +195,17 @@ int main() {
 	Entity Particle[NumOfParticles];
 
 	//Give particel object some attributes via member function
-	//SI units (radius is 1.00 for all planets)
-	Particle[0].CreatePlanet("Sun", 0, 0, 0, 0, 0, 0, 1.00f, 1.989e+30);
-	Particle[1].CreatePlanet("Mercury", 57909175e+3, 0, 0, 0, 47.362e+3, 0, 1.00f, 3.3011e+23); //the planet (satalite)
-	Particle[2].CreatePlanet("Venus", 108208930e+3, 0, 0, 0, 35.02e+3, 0, 1.00f, 4.8675e+24);
-	Particle[3].CreatePlanet("Earth", 149597890e+3, 0, 0, 0, 29.78e+3, 0, 1.00f, 5.97237e+24);
-	Particle[4].CreatePlanet("Mars", 227936640e+3, 0, 0, 0, 24.007e+3, 0, 1.00f, 6.4171e+23);
-	Particle[5].CreatePlanet("Jupiter", 778412020e+3, 0, 0, 0, 13.07e+3f, 0, 1.00f, 1.8982e+27);
-	Particle[6].CreatePlanet("Saturn", 1426725400e+3, 0, 0, 0, 9.68e+3, 0, 1.00f, 5.6834e+26);
-	Particle[7].CreatePlanet("Uranus", 2870972200e+3, 0, 0, 0, 6.80e+3, 0, 1.00f, 8.6810e+25);
-	Particle[8].CreatePlanet("Neptune", 4498252900e+3, 0, 0, 0, 5.43e+3, 0, 1.00f, 1.0243e+26);
-	Particle[9].CreatePlanet("Pluto", 5906380000e+3, 0, 0, 0, 4.67e+3, 0, 1.00f, 1.303e+22);
+	//Position in meters, velocity in m^2 s^-1, Mass in Peta Grams (Pg) (radius is 1.00 for all planets)
+	Particle[0].CreatePlanet("Sun", 0, 0, 0, 0, 0, 0, 1.00f, 1.989e+18);
+	Particle[1].CreatePlanet("Mercury", 57909175e+3, 0, 0, 0, 47.362e+3, 0, 1.00f, 3.3011e+11); //the planet (satalite)
+	Particle[2].CreatePlanet("Venus", 108208930e+3, 0, 0, 0, 35.02e+3, 0, 1.00f, 4.8675e+12);
+	Particle[3].CreatePlanet("Earth", 149597890e+3, 0, 0, 0, 29.78e+3, 0, 1.00f, 5.97237e+12);
+	Particle[4].CreatePlanet("Mars", 227936640e+3, 0, 0, 0, 24.007e+3, 0, 1.00f, 6.4171e+11);
+	Particle[5].CreatePlanet("Jupiter", 778412020e+3, 0, 0, 0, 13.07e+3f, 0, 1.00f, 1.8982e+15);
+	Particle[6].CreatePlanet("Saturn", 1426725400e+3, 0, 0, 0, 9.68e+3, 0, 1.00f, 5.6834e+14);
+	Particle[7].CreatePlanet("Uranus", 2870972200e+3, 0, 0, 0, 6.80e+3, 0, 1.00f, 8.6810e+13);
+	Particle[8].CreatePlanet("Neptune", 4498252900e+3, 0, 0, 0, 5.43e+3, 0, 1.00f, 1.0243e+14);
+	Particle[9].CreatePlanet("Pluto", 5906380000e+3, 0, 0, 0, 4.67e+3, 0, 1.00f, 1.303e+10);
 
 	WritePythonData PythonParticleData(NumOfParticles);
 
@@ -221,7 +221,7 @@ int main() {
 			if (i != 0) { //we dont want to update the suns attributes 
 
 				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
-				double G = 6.67408e-11; //m^3 kg-1 s^-2
+				double G = 66.7408; //m^3 Pg-1 s^-2 (Peta Grams)
 				Vector r = Particle[0].Position - Particle[i].Position; //radius between planet and sun
 				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (r.Length() * r.Length())); //Centrefugal force 
 
