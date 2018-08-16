@@ -186,8 +186,8 @@ public:
 
 int main() {
 	double time;
-	double MAX_TIME = 1;
-	double dt = 1.00f / 100.00f;
+	double MAX_TIME = 1000; 
+	double dt = 1.00; //1 Solar Day
 	std::uint64_t file_counter = 0;
 
 	//Create an array of Particle Obj on the Stack
@@ -195,17 +195,17 @@ int main() {
 	Entity Particle[NumOfParticles];
 
 	//Give particel object some attributes via member function
-	//Position in meters, velocity in m^2 s^-1, Mass in Peta Grams (Pg) (radius is 1.00 for all planets)
-	Particle[0].CreatePlanet("Sun", 0, 0, 0, 0, 0, 0, 1.00f, 1.989e+18);
-	Particle[1].CreatePlanet("Mercury", 57909175e+3, 0, 0, 0, 47.362e+3, 0, 1.00f, 3.3011e+11); //the planet (satalite)
-	Particle[2].CreatePlanet("Venus", 108208930e+3, 0, 0, 0, 35.02e+3, 0, 1.00f, 4.8675e+12);
-	Particle[3].CreatePlanet("Earth", 149597890e+3, 0, 0, 0, 29.78e+3, 0, 1.00f, 5.97237e+12);
-	Particle[4].CreatePlanet("Mars", 227936640e+3, 0, 0, 0, 24.007e+3, 0, 1.00f, 6.4171e+11);
-	Particle[5].CreatePlanet("Jupiter", 778412020e+3, 0, 0, 0, 13.07e+3f, 0, 1.00f, 1.8982e+15);
-	Particle[6].CreatePlanet("Saturn", 1426725400e+3, 0, 0, 0, 9.68e+3, 0, 1.00f, 5.6834e+14);
-	Particle[7].CreatePlanet("Uranus", 2870972200e+3, 0, 0, 0, 6.80e+3, 0, 1.00f, 8.6810e+13);
-	Particle[8].CreatePlanet("Neptune", 4498252900e+3, 0, 0, 0, 5.43e+3, 0, 1.00f, 1.0243e+14);
-	Particle[9].CreatePlanet("Pluto", 5906380000e+3, 0, 0, 0, 4.67e+3, 0, 1.00f, 1.303e+10);
+	//The masses are taken relative to the Sun, heliocentric distances are in A.U. (astronomical units), time in Earth days
+	Particle[0].CreatePlanet("Sun", 0, 0, 0, 0, 0, 0, 1.00f, 1);
+	Particle[1].CreatePlanet("Mercury", 3.582003550509369E-01, -1.106711537126086E-01, -4.198772232887506E-02, 2.837327404682707E-03, 2.814552279662408E-02, 2.039574776485654E-03, 1.00f, 1.651998994E-7); //the planet (satalite)
+	Particle[2].CreatePlanet("Venus", 1.169414393096834E-01, -7.178268450841996E-01, -1.659517206836183E-02, 1.982673552089452E-02, 3.181258433262683E-03, -1.100494062679515E-03, 1.00f, 2.447573548E-6);
+	Particle[3].CreatePlanet("Earth", 8.071651056948089E-01, -6.116288312685261E-01, 2.026118733774949E-05, 1.010842147950843E-02, 1.365428708892866E-02, -7.936152929295118E-07, 1.00f, 3.003268796E-6);
+	Particle[4].CreatePlanet("Mars", 1.002259978275141E+00, -9.599729608079449E-01, -4.470861097048866E-02, 1.020919012415160E-02, 1.130388712074698E-02, -1.365626667320784E-05, 1.00f, 3.227105859E-7);
+	Particle[5].CreatePlanet("Jupiter", -3.032866238164082E+00, -4.451352194764283E+00, 8.635007952427044E-02, 6.150689965483747E-03, -3.896629107801202E-03, -1.214382179270277E-04, 1.00f, 9.544883078E-4);
+	Particle[6].CreatePlanet("Saturn", 1.241022210371602E+00, -9.986898686592236E+00, 1.241943420031552E-01, 5.236307741465693E-03, 6.669446607616443E-04, -2.196298850769255E-04, 1.00f, 2.857933115E-4);
+	Particle[7].CreatePlanet("Uranus", 1.729292868435325E+01, 9.800196745658209E+00, -1.875280685583884E-01, -1.961762424738595E-03, 3.234714069407250E-03, 3.717731411951507E-05, 1.00f, 4.365602213E-4);
+	Particle[8].CreatePlanet("Neptune", 2.887289827253568E+01, -7.909509937130501E+00, -5.025924589017090E-01, 8.151468578369611E-04, 3.043624603687646E-03, -8.115060243079369E-05, 1.00f, 5.149610259E-5);
+	Particle[9].CreatePlanet("Pluto", 1.146561091514581E+01, -3.160682122191916E+01, 6.484213579439634E-02, 3.036273559933204E-03, 4.170573917353994E-04, -9.176459347526458E-04, 1.00f, 6.552677898E-9);
 
 	WritePythonData PythonParticleData(NumOfParticles);
 
@@ -221,7 +221,7 @@ int main() {
 			if (i != 0) { //we dont want to update the suns attributes 
 
 				//Evaluate newtons law of grivatation (IN VECTOR FORM) https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
-				double G = 66.7408; //m^3 Pg-1 s^-2 (Peta Grams)
+				double G = 0.0002959122083;
 				Vector r = Particle[0].Position - Particle[i].Position; //radius between planet and sun
 				Particle[i].Acceleration = r.NormalizeVector() * ((G * Particle[0].Mass * Particle[i].Mass) / (r.Length() * r.Length())); //Centrefugal force 
 
