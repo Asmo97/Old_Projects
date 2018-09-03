@@ -41,9 +41,9 @@ void loop() {
   switch(Transducer){
     case OFFLINE: digitalWrite(ledPin, LOW); break;
 
-    case TRANSMIT: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Driver_Pin, HIGH); analogWrite(MOSFET_Pin, 255); break;
+    case TRANSMIT: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Driver_Pin, HIGH); digitalWrite(MOSFET_Pin, HIGH); break;
 
-    case LISTEN: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Driver_Pin, LOW); analogWrite(MOSFET_Pin, 0); break;
+    case LISTEN: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Driver_Pin, LOW); digitalWrite(MOSFET_Pin, LOW); break;
     
   }
 }
