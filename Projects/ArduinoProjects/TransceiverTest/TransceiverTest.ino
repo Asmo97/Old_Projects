@@ -39,7 +39,7 @@ void loop() {
   }
 
   switch(Transducer){
-    case OFFLINE: digitalWrite(ledPin, LOW); break;
+    case OFFLINE: digitalWrite(ledPin, LOW); digitalWrite(MOSFET_Driver_PWM_Pin, LOW); digitalWrite(MOSFET_Pin, LOW); break;
 
     case TRANSMIT: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Pin, HIGH); Generate_Burst(10, 5, 15); break;
 
@@ -75,3 +75,4 @@ void Generate_Burst(int period, int cycles, int cycle_period){ //period in ms, c
   
   timer = 0;
 }
+
