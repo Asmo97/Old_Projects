@@ -67,7 +67,7 @@ void Generate_Burst(){ //period in ms
     digitalWrite(MOSFET_Driver_PWM_Pin, state);
   }
 
-  cycle_timer.begin(Generate_Cycles, 12.5);
+  cycle_timer.begin(Generate_Cycles, 12.5); //transition every 12.5 micro seconds, 1/25e-6 = 40kHz
 }
 
 void Generate_Cycles(){
