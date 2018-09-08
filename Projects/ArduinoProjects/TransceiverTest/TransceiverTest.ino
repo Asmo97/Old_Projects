@@ -4,10 +4,12 @@
 #define MOSFET_Driver_PWM_Pin 21
 #define MOSFET_Pin 14
 
-enum State : std::uint8_t { OFFLINE = 1, TRANSMIT, LISTEN};
+enum State : std::uint8_t { OFFLINE = 1, TRANSMIT, LISTEN, LISTEN_TRANSMIT};
 State Transducer = OFFLINE;
 
 char rx_byte;
+
+IntervalTimer cycle_timer;
 
 void setup() {
   Serial.begin(9600);
@@ -32,6 +34,9 @@ void loop() {
     }else if ((rx_byte == '2')) {
       Serial.println("Transducer Listen");
       Transducer = LISTEN;
+    }else if ((rx_byte == '3')) {
+      Serial.println("Transducer Listen and Transmit");
+      Transducer = LISTEN_TRASNMIT;
     }else {
       Serial.print(rx_byte);
       Serial.println(" is not a valid command.");
@@ -41,38 +46,36 @@ void loop() {
   switch(Transducer){
     case OFFLINE: digitalWrite(ledPin, LOW); digitalWrite(MOSFET_Driver_PWM_Pin, LOW); digitalWrite(MOSFET_Pin, LOW); break;
 
-    case TRANSMIT: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Pin, HIGH); Generate_Burst(10, 5, 15); break;
+    case TRANSMIT: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Pin, HIGH); Generate_Burst(); break;
 
     case LISTEN: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Driver_PWM_Pin, LOW); digitalWrite(MOSFET_Pin, LOW); break;
+
+    case LISTEN_TRASNMIT: digitalWrite(ledPin, HIGH); digitalWrite(MOSFET_Driver_PWM_Pin, HIGH); digitalWrite(MOSFET_Pin, LOW); break;
     
   }
 }
 
-void Generate_Burst(int period, int cycles, int cycle_period){ //period in ms, cycle period in us
+unsigned int period = 10;
+volatile int cycles = 5;
+volatile int cycle_counter = 0;
+volatile bool state = HIGH;
+
+void Generate_Burst(){ //period in ms
   elapsedMillis timer;
 
   while(timer <= period){
-    digitalWrite(MOSFET_Driver_PWM_Pin, HIGH);
+    digitalWrite(MOSFET_Driver_PWM_Pin, state);
   }
 
-  //-------Now create the cycles--------
+  cycle_timer.begin(Generate_Cycles, 12.5);
+}
 
-  int current_cycles = 0;
-  elapsedMicros cycle_timer;
-  
-  while (current_cycles < cycles){
-    while (cycle_timer <= cycle_period) {
-      digitalWrite(MOSFET_Driver_PWM_Pin, LOW);
-    }
-    
-    while (cycle_timer > cycle_period && cycle_timer <= (cycle_period*2) ) {
-      digitalWrite(MOSFET_Driver_PWM_Pin, HIGH);
-    }
-  
-    current_cycles++;
-    cycle_timer = 0;
+void Generate_Cycles(){
+  digitalWrite(MOSFET_Driver_PWM_Pin, !state);
+  cycle_counter++;
+
+  if (cycle_counter > (cycles  * 2)){
+    cycle_timer.end();
   }
-  
-  timer = 0;
 }
 
