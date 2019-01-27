@@ -1,0 +1,15 @@
+[0] Config.pm:302> INFO - This is Biber 2.11
+[0] Config.pm:305> INFO - Logfile is 'WinterReport.blg'
+[28] biber-MSWIN64:313> INFO - === 
+[51] Biber.pm:371> INFO - Reading 'WinterReport.bcf'
+[137] Biber.pm:857> INFO - Found 18 citekeys in bib section 0
+[151] Biber.pm:3976> INFO - Processing section 0
+[164] Biber.pm:4136> INFO - Looking for bibtex format file 'ref.bib' for section 0
+[167] bibtex.pm:1500> INFO - LaTeX decoding ...
+[195] bibtex.pm:1316> INFO - Found BibTeX data source 'ref.bib'
+[291] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[291] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[291] Biber.pm:3804> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[292] Biber.pm:3810> INFO - No sort tailoring available for locale 'en-US'
+[307] bbl.pm:617> INFO - Writing 'WinterReport.bbl' with encoding 'UTF-8'
+[314] bbl.pm:720> INFO - Output to WinterReport.bbl
